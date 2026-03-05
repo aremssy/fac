@@ -34,6 +34,7 @@ class User extends BaseAuthenticatable implements MustVerifyEmail
         'status',
         'active_module',
         'slug',
+        'quickbooks_url',
     ];
 
     public function getFillable()

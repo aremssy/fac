@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, Search, Plus, Eye, Edit, Trash2, KeyRound, Lock, Unlock, LayoutGrid, List, Info, ArrowUpRight, CreditCard } from 'lucide-react';
+import { Filter, Search, Plus, Eye, Edit, Trash2, KeyRound, Lock, Unlock, LayoutGrid, List, Info, ArrowUpRight, CreditCard, ExternalLink } from 'lucide-react';
 import { toast } from '@/components/custom-toast';
 import { useInitials } from '@/hooks/use-initials';
 import { useTranslation } from 'react-i18next';
@@ -159,6 +159,13 @@ export default function Companies() {
     setCurrentCompany(company);
     
     switch (action) {
+      case 'quickbooks-link':
+        if (company?.quickbooks_url) {
+          window.open(company.quickbooks_url, '_blank', 'noopener');
+        } else {
+          toast.error(t('QuickBooks URL not set for this company'));
+        }
+        break;
       case 'login-as':
         router.get(route("impersonate.start", company.id));
         break;
@@ -626,6 +633,21 @@ export default function Companies() {
                             <Button 
                               variant="ghost" 
                               size="icon" 
+                              onClick={() => handleAction('quickbooks-link', company)}
+                              className="text-emerald-600 hover:text-emerald-800"
+                              disabled={!company.quickbooks_url}
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{company.quickbooks_url ? t("Open QuickBooks") : t("QuickBooks URL missing")}</TooltipContent>
+                        </Tooltip>
+                        
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
                               onClick={() => handleAction('reset-password', company)}
                               className="text-blue-500 hover:text-blue-700"
                             >
@@ -749,6 +771,10 @@ export default function Companies() {
                           <Info className="h-4 w-4 mr-2" />
                           <span>{t("Company Info")}</span>
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction('quickbooks-link', company)} disabled={!company.quickbooks_url}>
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          <span>{t("Open QuickBooks")}</span>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleAction('upgrade-plan', company)}>
                           <CreditCard className="h-4 w-4 mr-2" />
                           <span>{t("Upgrade Plan")}</span>
@@ -868,6 +894,7 @@ export default function Companies() {
           fields: [
             { name: 'name', label: t('Company Name'), type: 'text', required: true },
             { name: 'email', label: t('Email'), type: 'email', required: true },
+            { name: 'quickbooks_url', label: t('QuickBooks URL'), type: 'text' },
             { 
               name: 'login_enabled', 
               label: t('Enable Login'),

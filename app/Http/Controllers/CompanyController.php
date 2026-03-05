@@ -60,6 +60,7 @@ class CompanyController extends Controller
                 'plan_name' => $company->plan ? $company->plan->name : __('No Plan'),
                 'plan_expiry_date' => $company->plan_expire_date,
                 'appointments_count' => 0, // You can implement this based on your model relationships
+                'quickbooks_url' => $company->quickbooks_url,
             ];
         });
 
@@ -80,6 +81,7 @@ class CompanyController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'nullable|string|min:8',
             'status' => 'required|in:active,inactive',
+            'quickbooks_url' => 'nullable|url|max:255',
         ]);
 
         $company = new User;
@@ -94,6 +96,9 @@ class CompanyController extends Controller
         $company->type = 'company';
         $company->status = $validated['status'];
         $company->created_by = creatorId() ?? 1;
+        if (isset($validated['quickbooks_url'])) {
+            $company->quickbooks_url = $validated['quickbooks_url'];
+        }
 
         // Set company language same as creator (superadmin)
         $creator = auth()->user();
@@ -143,10 +148,14 @@ class CompanyController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $company->id,
+            'quickbooks_url' => 'nullable|url|max:255',
         ]);
 
         $company->name = $validated['name'];
         $company->email = $validated['email'];
+        if (array_key_exists('quickbooks_url', $validated)) {
+            $company->quickbooks_url = $validated['quickbooks_url'];
+        }
 
         $company->save();
 
