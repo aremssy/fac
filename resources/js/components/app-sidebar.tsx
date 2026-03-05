@@ -717,6 +717,40 @@ export function AppSidebar() {
             });
         }
 
+        // Payroll Management right under Dashboard
+        const payrollChildrenTop: any[] = [];
+        if (hasPermission(permissions, 'manage-salary-components')) {
+            payrollChildrenTop.push({
+                title: t('Salary Components'),
+                href: route('hr.salary-components.index')
+            });
+        }
+        if (hasPermission(permissions, 'manage-employee-salaries')) {
+            payrollChildrenTop.push({
+                title: t('Employee Salaries'),
+                href: route('hr.employee-salaries.index')
+            });
+        }
+        if (hasPermission(permissions, 'manage-payroll-runs')) {
+            payrollChildrenTop.push({
+                title: t('Payroll Runs'),
+                href: route('hr.payroll-runs.index')
+            });
+        }
+        if (hasPermission(permissions, 'manage-payslips')) {
+            payrollChildrenTop.push({
+                title: t('Payslips'),
+                href: route('hr.payslips.index')
+            });
+        }
+        if (payrollChildrenTop.length > 0) {
+            items.push({
+                title: t('Payroll Management'),
+                icon: DollarSign,
+                children: payrollChildrenTop
+            });
+        }
+
         // Leave Management as separate menu
         const leaveChildren = [];
 
@@ -795,14 +829,7 @@ export function AppSidebar() {
             });
         }
 
-        // Biometric Attendance 
-        if (hasPermission(permissions, 'manage-biometric-attendance')) {
-            items.push({
-                title: t('Biometric Attendance'),
-                href: route('hr.biometric-attendance.index'),
-                icon: Fingerprint,
-            });
-        }
+        // Biometric Attendance (hidden by request)
 
 
         // Time Tracking as separate menu
@@ -823,46 +850,7 @@ export function AppSidebar() {
             });
         }
 
-        // Payroll Management as separate menu
-        const payrollChildren = [];
-
-        if (hasPermission(permissions, 'manage-salary-components')) {
-            payrollChildren.push({
-                title: t('Salary Components'),
-                href: route('hr.salary-components.index')
-            });
-        }
-
-        if (hasPermission(permissions, 'manage-employee-salaries')) {
-            payrollChildren.push({
-                title: t('Employee Salaries'),
-                href: route('hr.employee-salaries.index')
-            });
-        }
-
-        if (hasPermission(permissions, 'manage-payroll-runs')) {
-            payrollChildren.push({
-                title: t('Payroll Runs'),
-                href: route('hr.payroll-runs.index')
-            });
-        }
-
-        if (hasPermission(permissions, 'manage-payslips')) {
-            payrollChildren.push({
-                title: t('Payslips'),
-                href: route('hr.payslips.index')
-            });
-        }
-
-
-
-        if (payrollChildren.length > 0) {
-            items.push({
-                title: t('Payroll Management'),
-                icon: DollarSign,
-                children: payrollChildren
-            });
-        }
+        // Payroll Management was moved near the top; skip adding here
 
         // Plans section
         const planChildren = [];
