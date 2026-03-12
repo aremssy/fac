@@ -145,7 +145,41 @@ export function AppSidebar() {
             });
         }
 
-        // Other menu items with permission checks
+        // Payroll Management directly under Staff
+        const payrollChildrenUnderStaff: any[] = [];
+        if (hasPermission(permissions, 'manage-salary-components')) {
+            payrollChildrenUnderStaff.push({
+                title: t('Salary Components'),
+                href: route('hr.salary-components.index')
+            });
+        }
+        if (hasPermission(permissions, 'manage-employee-salaries')) {
+            payrollChildrenUnderStaff.push({
+                title: t('Employee Salaries'),
+                href: route('hr.employee-salaries.index')
+            });
+        }
+        if (hasPermission(permissions, 'manage-payroll-runs')) {
+            payrollChildrenUnderStaff.push({
+                title: t('Payroll Runs'),
+                href: route('hr.payroll-runs.index')
+            });
+        }
+        if (hasPermission(permissions, 'manage-payslips')) {
+            payrollChildrenUnderStaff.push({
+                title: t('Payslips'),
+                href: route('hr.payslips.index')
+            });
+        }
+        if (payrollChildrenUnderStaff.length > 0) {
+            items.push({
+                title: t('Payroll Management'),
+                icon: DollarSign,
+                children: payrollChildrenUnderStaff
+            });
+        }
+
+        // Other menu items with permission checks continue
 
         // HR Module
         const hrChildren = [];
@@ -403,7 +437,7 @@ export function AppSidebar() {
 
         if (hrChildren.length > 0) {
             items.push({
-                title: t('HR Management'),
+                title: t('Company Setup'),
                 icon: Briefcase,
                 children: hrChildren
             });
@@ -717,40 +751,6 @@ export function AppSidebar() {
             });
         }
 
-        // Payroll Management right under Dashboard
-        const payrollChildrenTop: any[] = [];
-        if (hasPermission(permissions, 'manage-salary-components')) {
-            payrollChildrenTop.push({
-                title: t('Salary Components'),
-                href: route('hr.salary-components.index')
-            });
-        }
-        if (hasPermission(permissions, 'manage-employee-salaries')) {
-            payrollChildrenTop.push({
-                title: t('Employee Salaries'),
-                href: route('hr.employee-salaries.index')
-            });
-        }
-        if (hasPermission(permissions, 'manage-payroll-runs')) {
-            payrollChildrenTop.push({
-                title: t('Payroll Runs'),
-                href: route('hr.payroll-runs.index')
-            });
-        }
-        if (hasPermission(permissions, 'manage-payslips')) {
-            payrollChildrenTop.push({
-                title: t('Payslips'),
-                href: route('hr.payslips.index')
-            });
-        }
-        if (payrollChildrenTop.length > 0) {
-            items.push({
-                title: t('Payroll Management'),
-                icon: DollarSign,
-                children: payrollChildrenTop
-            });
-        }
-
         // Leave Management as separate menu
         const leaveChildren = [];
 
@@ -832,23 +832,7 @@ export function AppSidebar() {
         // Biometric Attendance (hidden by request)
 
 
-        // Time Tracking as separate menu
-        const timeTrackingChildren = [];
-
-        if (hasPermission(permissions, 'manage-time-entries')) {
-            timeTrackingChildren.push({
-                title: t('Time Entries'),
-                href: route('hr.time-entries.index')
-            });
-        }
-
-        if (timeTrackingChildren.length > 0) {
-            items.push({
-                title: t('Time Tracking'),
-                icon: Timer,
-                children: timeTrackingChildren
-            });
-        }
+        // Time Tracking hidden
 
         // Payroll Management was moved near the top; skip adding here
 
