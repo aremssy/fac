@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { usePage } from '@inertiajs/react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, LineChart, Line, AreaChart, Area } from 'recharts';
 import { hasPermission } from '@/utils/authorization';
+import { toast } from '@/components/custom-toast';
 
 interface CompanyDashboardData {
   stats: {
@@ -51,6 +52,7 @@ export default function Dashboard({ dashboardData }: { dashboardData: CompanyDas
   const { t } = useTranslation();
   const { auth, companySlug } = usePage().props as any;
   const [copied, setCopied] = useState(false);
+  const isCompanyQuickbooksUser = (auth as any)?.user?.type === 'company';
 
   const handleCopyCareerLink = () => {
     const careerUrl = companySlug ? 
@@ -69,7 +71,22 @@ export default function Dashboard({ dashboardData }: { dashboardData: CompanyDas
     window.open(careerUrl, '_blank');
   };
 
+  const openQuickBooks = () => {
+    const qbUrl = (auth as any)?.user?.quickbooks_url;
+    if (qbUrl && typeof qbUrl === 'string' && qbUrl.trim() !== '') {
+      window.open(qbUrl, '_blank', 'noopener');
+    } else {
+      toast.error(t('QuickBooks URL not set'));
+    }
+  };
+
   const pageActions: PageAction[] = [
+    ...(isCompanyQuickbooksUser ? [{
+      label: t('Open Quick Book'),
+      icon: <ExternalLink className="h-4 w-4" />,
+      variant: 'default',
+      onClick: openQuickBooks
+    }] as PageAction[] : []),
     {
       label: t('Refresh'),
       icon: <RefreshCw className="h-4 w-4" />,

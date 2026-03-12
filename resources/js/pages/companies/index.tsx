@@ -635,12 +635,11 @@ export default function Companies() {
                               size="icon" 
                               onClick={() => handleAction('quickbooks-link', company)}
                               className="text-emerald-600 hover:text-emerald-800"
-                              disabled={!company.quickbooks_url}
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>{company.quickbooks_url ? t("Open QuickBooks") : t("QuickBooks URL missing")}</TooltipContent>
+                          <TooltipContent>{t("Open QuickBooks")}</TooltipContent>
                         </Tooltip>
                         
                         <Tooltip>
@@ -771,7 +770,7 @@ export default function Companies() {
                           <Info className="h-4 w-4 mr-2" />
                           <span>{t("Company Info")}</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction('quickbooks-link', company)} disabled={!company.quickbooks_url}>
+                        <DropdownMenuItem onClick={() => handleAction('quickbooks-link', company)}>
                           <ExternalLink className="h-4 w-4 mr-2" />
                           <span>{t("Open QuickBooks")}</span>
                         </DropdownMenuItem>
