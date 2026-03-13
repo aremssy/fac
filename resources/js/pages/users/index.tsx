@@ -35,6 +35,7 @@ export default function Users() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+  const [isAdminFormModalOpen, setIsAdminFormModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<any>(null);
   const [formMode, setFormMode] = useState<'create' | 'edit' | 'view'>('create');
   
@@ -151,6 +152,10 @@ export default function Users() {
     setIsFormModalOpen(true);
   };
   
+  const handleAddAdmin = () => {
+    setIsAdminFormModalOpen(true);
+  };
+  
   const handleFormSubmit = (formData: any) => {
     // Keep roles as single string value, not array
     if (formData.roles && Array.isArray(formData.roles)) {
@@ -228,6 +233,31 @@ export default function Users() {
     });
   };
   
+  const handleAdminFormSubmit = (formData: any) => {
+    toast.loading(t('Creating admin...'));
+    router.post(route('users.admins.store'), formData, {
+      onSuccess: (page) => {
+        setIsAdminFormModalOpen(false);
+        toast.dismiss();
+        if (page.props.flash.success) {
+          toast.success(t(page.props.flash.success));
+        } else if (page.props.flash.warning) {
+          toast.warning ? toast.warning(t(page.props.flash.warning)) : toast.success(t(page.props.flash.warning));
+        } else if (page.props.flash.error) {
+          toast.error(t(page.props.flash.error));
+        }
+      },
+      onError: (errors) => {
+        toast.dismiss();
+        if (typeof errors === 'string') {
+          toast.error(t(errors));
+        } else {
+          toast.error(t('Failed to create admin: {{errors}}', { errors: Object.values(errors).join(', ') }));
+        }
+      }
+    });
+  };
+
   const handleResetPasswordConfirm = (data: { password: string, password_confirmation: string }) => {
     toast.loading(t('Resetting password...'));
     
@@ -300,6 +330,15 @@ export default function Users() {
       onClick: canCreate ? () => handleAddNew() : () => toast.error(t('User limit exceeded. Your plan allows maximum {{max}} users. Please upgrade your plan.', { max: planLimits.max_users })),
       disabled: !canCreate
     });
+    
+    if (auth?.user?.type === 'superadmin') {
+      pageActions.push({
+        label: t('Add Admin'),
+        icon: <Plus className="h-4 w-4 mr-2" />,
+        variant: 'default',
+        onClick: () => handleAddAdmin()
+      });
+    }
   }
 
   const breadcrumbs = [
@@ -701,6 +740,24 @@ export default function Users() {
         initialData={{}}
         title={`Reset Password for ${currentItem?.name || 'User'}`}
         mode="edit"
+      />
+
+      {/* Add Admin (Quick) Modal */}
+      <CrudFormModal
+        isOpen={isAdminFormModalOpen}
+        onClose={() => setIsAdminFormModalOpen(false)}
+        onSubmit={handleAdminFormSubmit}
+        formConfig={{
+          fields: [
+            { name: 'name', label: t('Name'), type: 'text', required: true },
+            { name: 'email', label: t('Email'), type: 'email', required: true },
+            { name: 'password', label: t('Password (optional, auto if empty)'), type: 'password', required: false },
+          ],
+          modalSize: 'md'
+        }}
+        initialData={{}}
+        title={t('Add Admin')}
+        mode="create"
       />
     </PageTemplate>
   );

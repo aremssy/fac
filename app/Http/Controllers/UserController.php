@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class UserController extends BaseController
@@ -119,6 +121,64 @@ class UserController extends BaseController
         } else {
             return redirect()->back()->with('error', __('Permission Denied.'));
         }
+    }
+
+    /**
+     * Quickly create an Admin user (superadmin only) with sane defaults.
+     */
+    public function storeAdmin(Request $request)
+    {
+        if (!Auth::user()->can('create-users')) {
+            return redirect()->back()->with('error', __('Permission Denied.'));
+        }
+        $authUser = Auth::user();
+        if ($authUser->type !== 'superadmin') {
+            abort(403, 'Only superadmin can create admin users.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        $plainPassword = $validated['password'] ?? Str::random(12);
+
+        $companySettings = settings();
+        $userLang = isset($companySettings['defaultLanguage']) ? $companySettings['defaultLanguage'] : $authUser->lang;
+
+        $user = new User();
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->password = Hash::make($plainPassword);
+        $user->created_by = $authUser->id;
+        $user->lang = $userLang;
+        $user->status = 'active';
+        $user->is_enable_login = 1;
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+
+        $adminRole = Role::where(function ($q) use ($authUser) {
+            $q->whereIn('created_by', getCompanyAndUsersId());
+        })->whereRaw('LOWER(name) = ?', ['admin'])->first();
+
+        if ($adminRole) {
+            $user->roles()->sync([$adminRole->id]);
+            $user->type = $adminRole->name;
+            $user->save();
+        } else {
+            // Fallback: set type explicitly if role is missing
+            $user->type = 'admin';
+            $user->save();
+        }
+
+        event(new \App\Events\UserCreated($user, $plainPassword));
+
+        if (session()->has('email_error')) {
+            return redirect()->route('users.index')->with('warning', __('Admin created, but welcome email failed: ') . session('email_error'));
+        }
+
+        return redirect()->route('users.index')->with('success', __('Admin user created successfully'));
     }
 
     /**

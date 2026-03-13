@@ -304,6 +304,7 @@ Route::middleware(['auth', 'verified', 'setting'])->group(function () {
             Route::get('users', [UserController::class, 'index'])->middleware('permission:manage-users')->name('users.index');
             Route::get('users/create', [UserController::class, 'create'])->middleware('permission:create-users')->name('users.create');
             Route::post('users', [UserController::class, 'store'])->middleware('permission:create-users')->name('users.store');
+            Route::post('users/admins', [UserController::class, 'storeAdmin'])->middleware('permission:create-users')->name('users.admins.store');
             Route::get('users/{user}', [UserController::class, 'show'])->middleware('permission:view-users')->name('users.show');
             Route::get('users/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit-users')->name('users.edit');
             Route::put('users/{user}', [UserController::class, 'update'])->middleware('permission:edit-users')->name('users.update');
