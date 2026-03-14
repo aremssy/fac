@@ -158,9 +158,7 @@ class UserController extends BaseController
         $user->email_verified_at = Carbon::now();
         $user->save();
 
-        $adminRole = Role::where(function ($q) use ($authUser) {
-            $q->whereIn('created_by', getCompanyAndUsersId());
-        })->whereRaw('LOWER(name) = ?', ['admin'])->first();
+        $adminRole = Role::whereRaw('LOWER(name) IN (?, ?)', ['superadmin', 'super-admin'])->first();
 
         if ($adminRole) {
             $user->roles()->sync([$adminRole->id]);

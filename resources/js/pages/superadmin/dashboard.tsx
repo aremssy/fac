@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { DashboardOverview } from '@/components/dashboard/dashboard-overview';
 import { router } from '@inertiajs/react';
+import { CrudFormModal } from '@/components/CrudFormModal';
+import { toast } from '@/components/custom-toast';
 
 interface SuperAdminDashboardData {
   stats: {
@@ -41,6 +43,7 @@ interface PageAction {
 export default function SuperAdminDashboard({ dashboardData }: { dashboardData: SuperAdminDashboardData }) {
   const { t } = useTranslation();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isAdminFormOpen, setIsAdminFormOpen] = useState(false);
 
 
   const handleRefresh = () => {
@@ -49,11 +52,50 @@ export default function SuperAdminDashboard({ dashboardData }: { dashboardData: 
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
+  const handleAdminFormSubmit = (formData: any) => {
+    toast.loading(t('Creating admin...'));
+    router.post(route('users.admins.store'), formData, {
+      onSuccess: (page) => {
+        setIsAdminFormOpen(false);
+        toast.dismiss();
+        // flash messages may be present
+        // @ts-ignore
+        if (page.props.flash?.success) {
+          // @ts-ignore
+          toast.success(t(page.props.flash.success));
+        // @ts-ignore
+        } else if (page.props.flash?.warning) {
+          // @ts-ignore
+          toast.success(t(page.props.flash.warning));
+        // @ts-ignore
+        } else if (page.props.flash?.error) {
+          // @ts-ignore
+          toast.error(t(page.props.flash.error));
+        } else {
+          toast.success(t('Admin user created successfully'));
+        }
+      },
+      onError: (errors) => {
+        toast.dismiss();
+        if (typeof errors === 'string') {
+          toast.error(t(errors));
+        } else {
+          toast.error(t('Failed to create admin: {{errors}}', { errors: Object.values(errors).join(', ') }));
+        }
+      }
+    });
+  };
 
 
 
 
   const pageActions: PageAction[] = [
+    {
+      label: t('Add Admin'),
+      icon: <UserPlus className="h-4 w-4" />,
+      variant: 'default',
+      onClick: () => setIsAdminFormOpen(true)
+    },
     {
       label: t('Refresh'),
       icon: <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />,
@@ -83,6 +125,7 @@ export default function SuperAdminDashboard({ dashboardData }: { dashboardData: 
     <PageTemplate 
       title={t('Dashboard')}
       url="/dashboard"
+      description={t('System administration and oversight')}
       actions={pageActions}
     >
       <div className="space-y-6">
@@ -240,6 +283,24 @@ export default function SuperAdminDashboard({ dashboardData }: { dashboardData: 
 
         {/* Feature Overview */}
         <DashboardOverview userType="superadmin" stats={stats} />
+
+        {/* Add Admin Modal */}
+        <CrudFormModal
+          isOpen={isAdminFormOpen}
+          onClose={() => setIsAdminFormOpen(false)}
+          onSubmit={handleAdminFormSubmit}
+          formConfig={{
+            fields: [
+              { name: 'name', label: t('Name'), type: 'text', required: true },
+              { name: 'email', label: t('Email'), type: 'email', required: true },
+              { name: 'password', label: t('Password (optional, auto if empty)'), type: 'password', required: false },
+            ],
+            modalSize: 'md'
+          }}
+          initialData={{}}
+          title={t('Add Admin')}
+          mode="create"
+        />
       </div>
     </PageTemplate>
   );
