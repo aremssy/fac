@@ -27,22 +27,15 @@ class UserController extends BaseController
                 abort(403, 'Unauthorized Access Prevented');
             }
 
-            // $userQuery = User::withPermissionCheck()->with(['roles', 'creator'])->latest();
-            $userQuery = User::with(['roles', 'creator'])->where(function ($q) {
-                if (Auth::user()->can('manage-any-users')) {
-                    $q->whereIn('created_by', getCompanyAndUsersId());
-                } elseif (Auth::user()->can('manage-own-users')) {
-                    $q->where('created_by', Auth::id());
-                } else {
-                    $q->whereRaw('1 = 0');
+            $userQuery = User::with(['roles', 'creator'])->latest();
+            if (Auth::user()->can('manage-any-users')) {
+                if ($authUser->type !== 'superadmin') {
+                    $userQuery->whereIn('created_by', getCompanyAndUsersId());
                 }
-            })->latest();
-
-            # Admin
-            if ($authUserRole === 'super admin') {
-                $userQuery->whereDoesntHave('roles', function ($q) {
-                    $q->where('name', 'super admin');
-                });
+            } elseif (Auth::user()->can('manage-own-users')) {
+                $userQuery->where('created_by', Auth::id());
+            } else {
+                $userQuery->whereRaw('1 = 0');
             }
 
             // Handle search
