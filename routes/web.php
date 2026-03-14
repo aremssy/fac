@@ -80,6 +80,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarningController;
 use App\Http\Controllers\XenditPaymentController;
 use App\Http\Controllers\YooKassaPaymentController;
+use App\Http\Controllers\ConsultationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -315,6 +316,8 @@ Route::middleware(['auth', 'verified', 'setting'])->group(function () {
             Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->middleware('permission:reset-password-users')->name('users.reset-password');
             Route::put('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->middleware('permission:toggle-status-users')->name('users.toggle-status');
         });
+
+        Route::get('consultations', [ConsultationController::class, 'index'])->name('consultations.index');
 
         // HR Module routes
         // Branch routes

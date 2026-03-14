@@ -37,6 +37,11 @@ export function AppSidebar() {
             href: route('dashboard'),
             icon: LayoutGrid,
         },
+        {
+            title: t('Consultations'),
+            href: route('consultations.index'),
+            icon: MessageSquare,
+        },
 
         {
             title: t('Companies'),
