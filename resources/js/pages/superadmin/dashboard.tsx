@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageTemplate } from '@/components/page-template';
-import { RefreshCw, BarChart3, Nfc, Building2, CreditCard, Ticket, DollarSign, TrendingUp, Activity, UserPlus, AlertCircle } from 'lucide-react';
+import { RefreshCw, BarChart3, Nfc, Building2, CreditCard, Ticket, DollarSign, TrendingUp, Activity, UserPlus, AlertCircle, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
@@ -95,6 +95,12 @@ export default function SuperAdminDashboard({ dashboardData }: { dashboardData: 
       icon: <UserPlus className="h-4 w-4" />,
       variant: 'default',
       onClick: () => setIsAdminFormOpen(true)
+    },
+    {
+      label: t('View All Users'),
+      icon: <Users className="h-4 w-4" />,
+      variant: 'secondary',
+      onClick: () => router.get(route('users.index'))
     },
     {
       label: t('Refresh'),
