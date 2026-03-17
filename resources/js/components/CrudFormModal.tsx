@@ -592,7 +592,7 @@ export function CrudFormModal({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description || " "}</DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[70vh] pr-4">
+        <div className="max-h-[70vh] pr-4 overflow-auto">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Price Summary Section */}
             {formConfig.priceSummary && (
@@ -695,7 +695,7 @@ export function CrudFormModal({
               ))
             )}
           </form>
-        </ScrollArea>
+        </div>
         <DialogFooter className="sm:justify-end">
           <Button type="button" variant="outline" onClick={onClose}>
             {t("Cancel")}
