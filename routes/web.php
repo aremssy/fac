@@ -330,6 +330,7 @@ Route::middleware(['auth', 'verified', 'setting'])->group(function () {
         Route::get('gig-workforce/commissions', [GigWorkforceController::class, 'commissionsIndex'])->name('gig-workforce.commissions.index');
 
         Route::get('crm/leads', [LeadController::class, 'index'])->name('crm.leads.index');
+        Route::get('crm/leads/create', [LeadController::class, 'create'])->name('crm.leads.create');
         Route::post('crm/leads', [LeadController::class, 'store'])->name('crm.leads.store');
         Route::put('crm/leads/{lead}', [LeadController::class, 'update'])->name('crm.leads.update');
         Route::post('crm/leads/{lead}/convert', [LeadController::class, 'convert'])->name('crm.leads.convert');

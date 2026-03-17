@@ -78,7 +78,7 @@ export default function Leads() {
         {
           label: t('Add Lead'),
           variant: 'default',
-          onClick: () => setIsFormOpen(true),
+          onClick: () => router.get(route('crm.leads.create')),
         },
       ]}
     >
@@ -155,32 +155,7 @@ export default function Leads() {
         />
       </div>
 
-      <CrudFormModal
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onSubmit={async (values) => {
-          try {
-            await router.post(route('crm.leads.store'), values, { preserveState: true, preserveScroll: true });
-            setIsFormOpen(false);
-            toast.success(t('Lead created'));
-          } catch (e: any) {
-            toast.error(e?.message || t('Failed to create lead'));
-          }
-        }}
-        formConfig={{
-          fields: [
-            { name: 'title', label: t('Title'), type: 'text', required: true },
-            { name: 'contact_name', label: t('Contact Name'), type: 'text' },
-            { name: 'contact_email', label: t('Contact Email'), type: 'email' },
-            { name: 'phone', label: t('Phone'), type: 'text' },
-            { name: 'company_name', label: t('Company Name'), type: 'text' },
-            { name: 'source', label: t('Source'), type: 'text' },
-          ],
-          modalSize: 'md',
-        }}
-        title={t('Create Lead')}
-        mode="create"
-      />
+      
 
       {convertLead && (
         <CrudFormModal

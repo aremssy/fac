@@ -11,6 +11,17 @@ use Inertia\Inertia;
 
 class LeadController extends Controller
 {
+    public function create()
+    {
+        if (!auth()->check() || !in_array(auth()->user()->type, ['superadmin', 'gig_workforce', 'admin', 'company'])) {
+            abort(403);
+        }
+        return Inertia::render('crm/leads/create', [
+            'defaults' => [
+                'status' => 'new',
+            ],
+        ]);
+    }
     public function index(Request $request)
     {
         if (!Auth::check()) {

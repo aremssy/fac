@@ -455,6 +455,11 @@ export default function Companies() {
         );
       }
     },
+    {
+      key: 'gig_user_name',
+      label: t('Gig User'),
+      render: (value: string) => value ? <span>{value}</span> : <span className="text-muted-foreground">{t('Unassigned')}</span>
+    },
     { 
       key: 'plan_name', 
       label: t('Plan'),

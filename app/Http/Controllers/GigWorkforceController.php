@@ -48,12 +48,21 @@ class GigWorkforceController extends Controller
             });
         }
         $assignments = $query->paginate($perPage)->withQueryString();
+        $gigUsers = \App\Models\User::where('type', 'gig_workforce')->select('id', 'name')->orderBy('name')->get();
+        $assignedCompanyIds = \App\Models\GigWorkforceAssignment::pluck('company_id')->unique()->toArray();
+        $unassignedCompanies = \App\Models\User::where('type', 'company')
+            ->whereNotIn('id', $assignedCompanyIds)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
         return Inertia::render('superadmin/gig-assignments/index', [
             'assignments' => $assignments,
             'filters' => [
                 'search' => $request->search ?? '',
                 'per_page' => $perPage,
             ],
+            'gigUsers' => $gigUsers,
+            'unassignedCompanies' => $unassignedCompanies,
         ]);
     }
 

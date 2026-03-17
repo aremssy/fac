@@ -48,9 +48,19 @@ class CompanyController extends Controller
         // Get paginated results
         $perPage = $request->input('per_page', 10);
         $companies = $query->paginate($perPage)->withQueryString();
+        $companyIds = $companies->getCollection()->pluck('id')->toArray();
+        $assignments = \App\Models\GigWorkforceAssignment::with('user')
+            ->whereIn('company_id', $companyIds)
+            ->get()
+            ->groupBy('company_id');
 
         // Transform data for frontend
-        $companies->getCollection()->transform(function ($company) {
+        $companies->getCollection()->transform(function ($company) use ($assignments) {
+            $gigUserName = null;
+            if (isset($assignments[$company->id]) && $assignments[$company->id]->count() > 0) {
+                $gig = $assignments[$company->id]->first();
+                $gigUserName = $gig->user ? $gig->user->name : null;
+            }
             return [
                 'id' => $company->id,
                 'name' => $company->name,
@@ -61,6 +71,7 @@ class CompanyController extends Controller
                 'plan_expiry_date' => $company->plan_expire_date,
                 'appointments_count' => 0, // You can implement this based on your model relationships
                 'quickbooks_url' => $company->quickbooks_url,
+                'gig_user_name' => $gigUserName,
             ];
         });
 
