@@ -74,7 +74,7 @@ export default function JobApplication() {
     e.preventDefault();
 
     // Process custom questions
-    let customAnswers = {};
+    const customAnswers = {};
     if (customQuestions && customQuestions.length > 0) {
       customQuestions.forEach(question => {
         const answer = data[`custom_question_${question.id}`] || '';

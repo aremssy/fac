@@ -144,6 +144,9 @@ Route::post('/landing-page/contact', [LandingPageController::class, 'submitConta
 Route::post('/landing-page/subscribe', [LandingPageController::class, 'subscribe'])->name('landing-page.subscribe');
 Route::get('/page/{slug}', [CustomPageController::class, 'show'])->name('custom-page.show');
 
+// Public consultations submission (non-authenticated)
+Route::post('consultations', [ConsultationController::class, 'submitApi'])->name('consultations.submit');
+
 Route::get('/translations/{locale}', [TranslationController::class, 'getTranslations'])->name('translations');
 Route::get('/refresh-language/{locale}', [TranslationController::class, 'refreshLanguage'])->name('refresh-language');
 Route::get('/initial-locale', [TranslationController::class, 'getInitialLocale'])->name('initial-locale');

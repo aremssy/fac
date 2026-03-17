@@ -255,7 +255,7 @@ export default function Shifts() {
         // Calculate working hours from start_time and end_time
         if (row.start_time && row.end_time) {
           const start = new Date(`2000-01-01 ${row.start_time}`);
-          let end = new Date(`2000-01-01 ${row.end_time}`);
+          const end = new Date(`2000-01-01 ${row.end_time}`);
 
           // Handle next day for night shifts
           if (end <= start) {
