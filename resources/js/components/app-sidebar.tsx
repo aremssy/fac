@@ -103,13 +103,17 @@ export function AppSidebar() {
             ]
         },
         {
+            title: t('Referral Program'),
+            href: route('referral.index'),
+            icon: Gift,
+        },
+        {
             title: t('Settings'),
             icon: Settings,
             children: [
                 { title: t('System Settings'), href: route('settings') },
                 { title: t('Currencies'), href: route('currencies.index') },
                 { title: t('Coupons'), href: route('coupons.index') },
-                { title: t('Referral Program'), href: route('referral.index') },
             ]
         }
     ];

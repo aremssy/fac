@@ -76,6 +76,7 @@ export interface FormField {
   required?: boolean;
   multiple?: boolean; // For media-picker and multi-select fields
   searchable?: boolean; // For select fields
+  defaultValue?: any;
   options?: FilterOption[];
   relation?: {
     endpoint: string;
