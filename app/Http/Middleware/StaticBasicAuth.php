@@ -18,8 +18,8 @@ class StaticBasicAuth
         $parts = explode(':', $decoded, 2);
         $user = $parts[0] ?? '';
         $pass = $parts[1] ?? '';
-        $expectedUser = getenv('AREMS_BASIC_USER') ?: '';
-        $expectedPass = getenv('AREMS_BASIC_PASSWORD') ?: '';
+        $expectedUser = getenv('AREMS_BASIC_USER') ?: 'arems';
+        $expectedPass = getenv('AREMS_BASIC_PASSWORD') ?: 'Pa22w0rd';
         if ($user !== $expectedUser || $pass !== $expectedPass) {
             return Response::make('Unauthorized', 401, ['WWW-Authenticate' => 'Basic realm="API"']);
         }
