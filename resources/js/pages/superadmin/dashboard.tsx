@@ -221,6 +221,20 @@ export default function SuperAdminDashboard({ dashboardData }: { dashboardData: 
             </CardContent>
           </Card>
 
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">{t('Gig-Workforce')}</p>
+                  <h3 className="mt-2 text-2xl font-bold">{(stats as any).totalGigWorkforce?.toLocaleString() || 0}</h3>
+                </div>
+                <div className="rounded-full bg-teal-100 p-3 dark:bg-teal-900">
+                  <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           
         </div>
 

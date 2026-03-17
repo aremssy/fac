@@ -81,6 +81,8 @@ use App\Http\Controllers\WarningController;
 use App\Http\Controllers\XenditPaymentController;
 use App\Http\Controllers\YooKassaPaymentController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\LeadController;
+use App\Http\Controllers\GigWorkforceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -321,6 +323,18 @@ Route::middleware(['auth', 'verified', 'setting'])->group(function () {
         });
 
         Route::get('consultations', [ConsultationController::class, 'index'])->name('consultations.index');
+
+        Route::get('gig-workforce/dashboard', [GigWorkforceController::class, 'dashboard'])->name('gig-workforce.dashboard');
+        Route::get('gig-workforce/assignments', [GigWorkforceController::class, 'assignmentsIndex'])->name('gig-workforce.assignments.index');
+        Route::post('gig-workforce/assignments', [GigWorkforceController::class, 'assignCompany'])->name('gig-workforce.assignments.store');
+        Route::delete('gig-workforce/assignments/{assignment}', [GigWorkforceController::class, 'destroyAssignment'])->name('gig-workforce.assignments.destroy');
+        Route::get('gig-workforce/commissions', [GigWorkforceController::class, 'commissionsIndex'])->name('gig-workforce.commissions.index');
+
+        Route::get('crm/leads', [LeadController::class, 'index'])->name('crm.leads.index');
+        Route::post('crm/leads', [LeadController::class, 'store'])->name('crm.leads.store');
+        Route::put('crm/leads/{lead}', [LeadController::class, 'update'])->name('crm.leads.update');
+        Route::post('crm/leads/{lead}/convert', [LeadController::class, 'convert'])->name('crm.leads.convert');
+        Route::put('crm/leads/{lead}/reassign', [LeadController::class, 'reassign'])->name('crm.leads.reassign');
 
         // HR Module routes
         // Branch routes

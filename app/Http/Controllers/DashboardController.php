@@ -87,6 +87,7 @@ class DashboardController extends Controller
         // Get system-wide statistics
         $totalCompanies = User::where('type', 'company')->count();
         $totalUsers = User::where('type', '!=', 'superadmin')->where('type', '!=', 'super admin')->count();
+        $totalGigWorkforce = User::where('type', 'gig_workforce')->count();
         $totalRevenue = PlanOrder::where('status', 'approved')->sum('final_price') ?? 0;
         $activePlans = Plan::where('is_plan_enable', 'on')->count();
 
@@ -109,6 +110,7 @@ class DashboardController extends Controller
             'stats' => [
                 'totalCompanies' => $totalCompanies,
                 'totalUsers' => $totalUsers,
+                'totalGigWorkforce' => $totalGigWorkforce,
                 'totalRevenue' => $totalRevenue,
                 'activePlans' => $activePlans,
                 'pendingRequests' => $pendingRequests,

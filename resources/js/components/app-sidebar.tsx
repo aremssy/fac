@@ -38,6 +38,16 @@ export function AppSidebar() {
             icon: LayoutGrid,
         },
         {
+            title: t('Gig Assignments'),
+            href: route('gig-workforce.assignments.index'),
+            icon: Users,
+        },
+        {
+            title: t('Leads'),
+            href: route('crm.leads.index'),
+            icon: BarChart,
+        },
+        {
             title: t('Consultations'),
             href: route('consultations.index'),
             icon: MessageSquare,
@@ -118,14 +128,27 @@ export function AppSidebar() {
     const getCompanyNavItems = (): NavItem[] => {
         const items: NavItem[] = [];
         // Dashboard - only show if user has dashboard permission
-        if (hasPermission(permissions, 'manage-dashboard')) {
+        if (hasPermission(permissions, 'manage-dashboard') || userRole === 'gig_workforce') {
             items.push({
                 title: t('Dashboard'),
-                href: route('dashboard'),
+                href: userRole === 'gig_workforce' ? route('gig-workforce.dashboard') : route('dashboard'),
                 icon: LayoutGrid,
             });
         }
 
+        // CRM for gig workforce
+        if (userRole === 'gig_workforce') {
+            items.push({
+                title: t('Leads'),
+                href: route('crm.leads.index'),
+                icon: BarChart,
+            });
+            items.push({
+                title: t('Commissions'),
+                href: route('gig-workforce.commissions.index'),
+                icon: Coins,
+            });
+        }
 
 
         // Staff section - only show if user has any staff-related permissions
