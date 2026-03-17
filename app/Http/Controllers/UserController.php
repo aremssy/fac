@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends BaseController
 {
@@ -116,6 +117,51 @@ class UserController extends BaseController
         }
     }
 
+    public function storeGigWorkforce(Request $request)
+    {
+        $authUser = Auth::user();
+        if (!$authUser || !($authUser->type === 'superadmin' || $authUser->can('create-users'))) {
+            abort(403);
+        }
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'nullable|string|min:6',
+            'category' => 'required|in:Accountant,Auditor,Marketer,Sub-Admin',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $password = $request->password ?: Str::random(10);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($password),
+            'created_by' => creatorId(),
+            'lang' => $authUser->lang ?? 'en',
+        ]);
+        $category = $request->category;
+        if ($category === 'Sub-Admin') {
+            $user->type = 'superadmin';
+            $user->save();
+            event(new \App\Events\UserCreated($user, $password));
+            return redirect()->route('users.index')->with('success', __('Sub-Admin created successfully'));
+        }
+        $user->type = 'gig_workforce';
+        $user->save();
+        $roleName = strtolower(str_replace('-', '_', $category)); // accountant, auditor, marketer
+        $role = Role::firstOrCreate([
+            'name' => $roleName,
+            'guard_name' => 'web',
+            'created_by' => creatorId(),
+        ], [
+            'label' => $category,
+            'description' => $category . ' role',
+        ]);
+        $user->assignRole($role);
+        event(new \App\Events\UserCreated($user, $password));
+        return redirect()->route('users.index')->with('success', __('Gig-Workforce user created successfully'));
+    }
     /**
      * Quickly create an Admin user (superadmin only) with sane defaults.
      */

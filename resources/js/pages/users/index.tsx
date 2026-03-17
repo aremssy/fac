@@ -155,6 +155,34 @@ export default function Users() {
   const handleAddAdmin = () => {
     setIsAdminFormModalOpen(true);
   };
+  const [isGigFormModalOpen, setIsGigFormModalOpen] = useState(false);
+  const handleAddGig = () => {
+    setIsGigFormModalOpen(true);
+  };
+  const handleGigFormSubmit = (formData: any) => {
+    toast.loading(t('Creating Gig-Workforce user...'));
+    router.post(route('users.gig.store'), formData, {
+      onSuccess: (page) => {
+        setIsGigFormModalOpen(false);
+        toast.dismiss();
+        if (page.props.flash?.success) {
+          toast.success(t(page.props.flash.success));
+        } else if (page.props.flash?.error) {
+          toast.error(t(page.props.flash.error));
+        } else {
+          toast.success(t('Gig user created'));
+        }
+      },
+      onError: (errors) => {
+        toast.dismiss();
+        if (typeof errors === 'string') {
+          toast.error(t(errors));
+        } else {
+          toast.error(t('Failed to create gig user: {{errors}}', { errors: Object.values(errors).join(', ') }));
+        }
+      }
+    });
+  };
   
   const handleFormSubmit = (formData: any) => {
     // Keep roles as single string value, not array
@@ -337,6 +365,12 @@ export default function Users() {
         icon: <Plus className="h-4 w-4 mr-2" />,
         variant: 'default',
         onClick: () => handleAddAdmin()
+      });
+      pageActions.push({
+        label: t('Add Gig-Workforce'),
+        icon: <Plus className="h-4 w-4 mr-2" />,
+        variant: 'default',
+        onClick: () => handleAddGig()
       });
     }
   }
@@ -757,6 +791,36 @@ export default function Users() {
         }}
         initialData={{}}
         title={t('Add Admin')}
+        mode="create"
+      />
+
+      {/* Add Gig-Workforce (Quick) Modal */}
+      <CrudFormModal
+        isOpen={isGigFormModalOpen}
+        onClose={() => setIsGigFormModalOpen(false)}
+        onSubmit={handleGigFormSubmit}
+        formConfig={{
+          fields: [
+            { name: 'name', label: t('Name'), type: 'text', required: true },
+            { name: 'email', label: t('Email'), type: 'email', required: true },
+            { name: 'password', label: t('Password (optional, auto if empty)'), type: 'password', required: false },
+            { 
+              name: 'category', 
+              label: t('User Category'), 
+              type: 'select', 
+              options: [
+                { value: 'Accountant', label: t('Accountant') },
+                { value: 'Auditor', label: t('Auditor') },
+                { value: 'Marketer', label: t('Marketer') },
+                { value: 'Sub-Admin', label: t('Sub-Admin') },
+              ],
+              required: true
+            },
+          ],
+          modalSize: 'md'
+        }}
+        initialData={{}}
+        title={t('Add Gig-Workforce')}
         mode="create"
       />
     </PageTemplate>

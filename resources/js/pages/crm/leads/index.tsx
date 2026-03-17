@@ -71,8 +71,10 @@ export default function Leads() {
 
   return (
     <PageTemplate
-      pageTitle={t('Leads')}
-      headerActions={[
+      title={t('Leads')}
+      url={route('crm.leads.index')}
+      description=""
+      actions={[
         {
           label: t('Add Lead'),
           variant: 'default',
@@ -84,7 +86,7 @@ export default function Leads() {
         <SearchAndFilterBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          onSearch={applyFilters}
+          onSearch={(e) => { e.preventDefault(); applyFilters(); }}
           filters={[
             {
               name: 'status',
@@ -97,8 +99,8 @@ export default function Leads() {
           ]}
           showFilters={true}
           setShowFilters={() => {}}
-          hasActiveFilters={statusFilter !== 'all'}
-          activeFilterCount={statusFilter !== 'all' ? 1 : 0}
+          hasActiveFilters={() => statusFilter !== 'all'}
+          activeFilterCount={() => (statusFilter !== 'all' ? 1 : 0)}
           onResetFilters={() => {
             setStatusFilter('all');
             applyFilters();
@@ -118,22 +120,29 @@ export default function Leads() {
       <div className='bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden'>
         <CrudTable
           columns={columns}
-          actions={actions}
+          actions={[
+            { label: t('Edit'), icon: 'Edit', action: 'edit' },
+            { label: t('Convert'), icon: 'CheckSquare', action: 'convert' },
+            ...(isSuperAdmin ? [{ label: t('Reassign'), icon: 'Users', action: 'reassign' }] : []),
+          ]}
           data={leads?.data || []}
           from={leads?.from || 1}
-          onAction={() => {}}
+          onAction={(action, row) => {
+            if (action === 'edit') handleEdit(row);
+            if (action === 'convert') setConvertLead(row);
+            if (action === 'reassign') handleReassign(row);
+          }}
           sortField={pageFilters.sort_field}
           sortDirection={pageFilters.sort_direction}
-          onSort={(field, dir) => {
+          onSort={(field: string) => {
             router.get(route('crm.leads.index'), {
               page: leads?.current_page || 1,
               status: statusFilter !== 'all' ? statusFilter : undefined,
               sort_field: field,
-              sort_direction: dir,
             }, { preserveState: true, preserveScroll: true });
           }}
-          permissions={{}}
-          entityPermissions={{}}
+          permissions={[]}
+          entityPermissions={{ view: '', edit: '', delete: '' }}
         />
 
         <Pagination
@@ -167,9 +176,10 @@ export default function Leads() {
             { name: 'company_name', label: t('Company Name'), type: 'text' },
             { name: 'source', label: t('Source'), type: 'text' },
           ],
-          title: t('Create Lead'),
-          submitLabel: t('Save'),
+          modalSize: 'md',
         }}
+        title={t('Create Lead')}
+        mode="create"
       />
 
       {convertLead && (
@@ -187,12 +197,16 @@ export default function Leads() {
           }}
           formConfig={{
             fields: [
-              { name: 'company_name', label: t('Company Name'), type: 'text', required: true, defaultValue: convertLead?.company_name || '' },
+              { name: 'company_name', label: t('Company Name'), type: 'text', required: true },
               { name: 'commission_amount', label: t('Commission Amount'), type: 'number', required: true },
             ],
-            title: t('Convert Lead'),
-            submitLabel: t('Convert'),
+            modalSize: 'sm',
           }}
+          initialData={{
+            company_name: convertLead?.company_name || '',
+          }}
+          title={t('Convert Lead')}
+          mode="create"
         />
       )}
     </PageTemplate>

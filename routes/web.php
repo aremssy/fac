@@ -305,21 +305,20 @@ Route::middleware(['auth', 'verified', 'setting'])->group(function () {
             Route::delete('roles/{role}', [RoleController::class, 'destroy'])->middleware('permission:delete-roles')->name('roles.destroy');
         });
 
-        // Users routes with granular permissions
-        Route::middleware('permission:manage-users')->group(function () {
-            Route::get('users', [UserController::class, 'index'])->middleware('permission:manage-users')->name('users.index');
-            Route::get('users/create', [UserController::class, 'create'])->middleware('permission:create-users')->name('users.create');
-            Route::post('users', [UserController::class, 'store'])->middleware('permission:create-users')->name('users.store');
-            Route::post('users/admins', [UserController::class, 'storeAdmin'])->middleware('permission:create-users')->name('users.admins.store');
-            Route::get('users/{user}', [UserController::class, 'show'])->middleware('permission:view-users')->name('users.show');
-            Route::get('users/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit-users')->name('users.edit');
-            Route::put('users/{user}', [UserController::class, 'update'])->middleware('permission:edit-users')->name('users.update');
-            Route::patch('users/{user}', [UserController::class, 'update'])->middleware('permission:edit-users');
-            Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware('permission:delete-users')->name('users.destroy');
-
-            // Additional user routes
-            Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->middleware('permission:reset-password-users')->name('users.reset-password');
-            Route::put('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->middleware('permission:toggle-status-users')->name('users.toggle-status');
+        // Users routes (allow superadmin OR permission)
+        Route::middleware('role_or_permission:superadmin|manage-users')->group(function () {
+            Route::get('users', [UserController::class, 'index'])->name('users.index');
+            Route::get('users/create', [UserController::class, 'create'])->middleware('role_or_permission:superadmin|create-users')->name('users.create');
+            Route::post('users', [UserController::class, 'store'])->middleware('role_or_permission:superadmin|create-users')->name('users.store');
+            Route::post('users/admins', [UserController::class, 'storeAdmin'])->middleware('role_or_permission:superadmin|create-users')->name('users.admins.store');
+            Route::post('users/gig', [UserController::class, 'storeGigWorkforce'])->middleware('role_or_permission:superadmin|create-users')->name('users.gig.store');
+            Route::get('users/{user}', [UserController::class, 'show'])->middleware('role_or_permission:superadmin|view-users')->name('users.show');
+            Route::get('users/{user}/edit', [UserController::class, 'edit'])->middleware('role_or_permission:superadmin|edit-users')->name('users.edit');
+            Route::put('users/{user}', [UserController::class, 'update'])->middleware('role_or_permission:superadmin|edit-users')->name('users.update');
+            Route::patch('users/{user}', [UserController::class, 'update'])->middleware('role_or_permission:superadmin|edit-users');
+            Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware('role_or_permission:superadmin|delete-users')->name('users.destroy');
+            Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->middleware('role_or_permission:superadmin|reset-password-users')->name('users.reset-password');
+            Route::put('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->middleware('role_or_permission:superadmin|toggle-status-users')->name('users.toggle-status');
         });
 
         Route::get('consultations', [ConsultationController::class, 'index'])->name('consultations.index');

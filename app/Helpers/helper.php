@@ -1087,8 +1087,8 @@ if (!function_exists('copySettingsFromSuperAdmin')) {
 if (!function_exists('createdBy')) {
     function createdBy()
     {
-        if (Auth::user()->type == 'superadmin') {
-            return Auth::user()->id;
+        if (Auth::user()->type == 'superadmin' || Auth::user()->type == 'admin') {
+            return getCompanyId(Auth::user()->id) ?: Auth::user()->id;
         } elseif (Auth::user()->type == 'company') {
             return Auth::user()->id;
         } else {
@@ -1414,6 +1414,15 @@ if (!function_exists('getCompanyId')) {
         if (!$user) {
             return null;
         }
+        // For superadmin/admin, use single global Default Company
+        if ($user->type === 'superadmin' || $user->type === 'admin') {
+            $defaultCompany = User::where('type', 'company')
+                ->where('name', 'Default Company')
+                ->first();
+            if ($defaultCompany) {
+                return $defaultCompany->id;
+            }
+        }
         if ($user->type === 'company' || $user->hasRole('company')) {
             return $user->id;
         }
@@ -1562,5 +1571,3 @@ if (!function_exists('upload_file')) {
         }
     }
 }
-
-

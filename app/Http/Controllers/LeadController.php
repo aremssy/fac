@@ -18,7 +18,7 @@ class LeadController extends Controller
         }
         $perPage = $request->has('per_page') ? (int) $request->per_page : 10;
         $query = Lead::query();
-        if (Auth::user()->type === 'superadmin') {
+        if (Auth::user()->type === 'superadmin' || Auth::user()->type === 'admin' || Auth::user()->type === 'company') {
             $query->orderBy('id', 'desc');
         } elseif (Auth::user()->type === 'gig_workforce') {
             $query->where(function ($q) {

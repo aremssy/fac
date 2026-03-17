@@ -38,6 +38,25 @@ export function AppSidebar() {
             icon: LayoutGrid,
         },
         {
+            title: t('Recruitment'),
+            icon: Users,
+            children: [
+                { title: t('Candidates'), href: route('hr.recruitment.candidates.index') },
+                { title: t('Job Postings'), href: route('hr.recruitment.job-postings.index') },
+                { title: t('Interview Types'), href: route('hr.recruitment.interview-types.index') },
+                { title: t('Interview Rounds'), href: route('hr.recruitment.interview-rounds.index') },
+                { title: t('Interviews'), href: route('hr.recruitment.interviews.index') },
+                { title: t('Offers'), href: route('hr.recruitment.offers.index') },
+                { title: t('Onboarding Checklists'), href: route('hr.recruitment.onboarding-checklists.index') },
+                { title: t('Checklist Items'), href: route('hr.recruitment.checklist-items.index') },
+            ]
+        },
+        {
+            title: t('Users'),
+            href: route('users.index'),
+            icon: Users,
+        },
+        {
             title: t('Gig Assignments'),
             href: route('gig-workforce.assignments.index'),
             icon: Users,
