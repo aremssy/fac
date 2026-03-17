@@ -103,44 +103,14 @@ export function AppSidebar() {
             ]
         },
         {
-            title: t('Coupons'),
-            href: route('coupons.index'),
-            icon: Settings,
-        },
-
-        {
-            title: t('Currencies'),
-            href: route('currencies.index'),
-            icon: DollarSign,
-        },
-        {
-            title: t('Referral Program'),
-            href: route('referral.index'),
-            icon: Gift,
-        },
-        {
-            title: t('Landing Page'),
-            icon: Palette,
-            children: [
-                {
-                    title: t('Landing Page'),
-                    href: route('landing-page')
-                },
-                {
-                    title: t('Custom Pages'),
-                    href: route('landing-page.custom-pages.index')
-                }
-            ]
-        },
-        // {
-        //     title: t('Email Templates'),
-        //     href: route('email-templates.index'),
-        //     icon: Mail,
-        // },
-        {
             title: t('Settings'),
-            href: route('settings'),
             icon: Settings,
+            children: [
+                { title: t('System Settings'), href: route('settings') },
+                { title: t('Currencies'), href: route('currencies.index') },
+                { title: t('Coupons'), href: route('coupons.index') },
+                { title: t('Referral Program'), href: route('referral.index') },
+            ]
         }
     ];
 

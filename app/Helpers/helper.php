@@ -171,6 +171,13 @@ if (!function_exists('updateSetting')) {
 if (!function_exists('isLandingPageEnabled')) {
     function isLandingPageEnabled()
     {
+        $envEnabled = env('LANDING_PAGE_ENABLED', false);
+        if ($envEnabled === true || $envEnabled === '1') {
+            return true;
+        }
+        if ($envEnabled === false || $envEnabled === '0') {
+            return false;
+        }
         return getSetting('landingPageEnabled', true) === true || getSetting('landingPageEnabled', true) === '1';
     }
 }
