@@ -42,7 +42,7 @@ class LeadController extends Controller
 
     public function store(Request $request)
     {
-        if (!Auth::check() || !in_array(Auth::user()->type, ['superadmin', 'gig_workforce'])) {
+        if (!Auth::check() || !in_array(Auth::user()->type, ['superadmin', 'gig_workforce', 'admin', 'company'])) {
             abort(403);
         }
         $validated = $request->validate([
@@ -57,7 +57,7 @@ class LeadController extends Controller
         $assigned = Auth::user()->type === 'gig_workforce' ? Auth::id() : ($validated['assigned_to'] ?? null);
         $lead = Lead::create(array_merge($validated, [
             'assigned_to' => $assigned,
-            'created_by' => Auth::id(),
+            'created_by' => createdBy(),
         ]));
         return redirect()->route('crm.leads.index')->with('success', __('Lead created'));
     }

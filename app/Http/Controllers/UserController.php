@@ -139,6 +139,7 @@ class UserController extends BaseController
             'password' => Hash::make($password),
             'created_by' => creatorId(),
             'lang' => $authUser->lang ?? 'en',
+            'status' => 'active',
         ]);
         $category = $request->category;
         if ($category === 'Sub-Admin') {

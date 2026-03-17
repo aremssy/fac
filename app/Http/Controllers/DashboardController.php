@@ -30,6 +30,10 @@ class DashboardController extends Controller
         if ($user->type === 'superadmin' || $user->type === 'super admin') {
             return $this->renderDashboard();
         }
+        // Gig-Workforce users go to their dashboard
+        if ($user->type === 'gig_workforce') {
+            return redirect()->route('gig-workforce.dashboard');
+        }
 
         // Check if user has dashboard permission (skip if permission doesn't exist)
         try {
